@@ -8,6 +8,9 @@ const port = process.env.PORT || 3000;
 app.use(cors())
 app.use(express.json())
 
+
+// const uri = "mongodb+srv://msalamgiir:lNDcFOVbunFYpml1@plantscare.lw2w2h7.mongodb.net/?retryWrites=true&w=majority&appName=PlantsCare";
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@plantscare.lw2w2h7.mongodb.net/?retryWrites=true&w=majority&appName=PlantsCare`;
 
 
@@ -40,8 +43,13 @@ async function run() {
 
 
     app.get('/plant', async (req, res) => {
+      const { emailParams } = req.query;
+      let quary = {}
 
-      const result = await userColletion.find().toArray();
+      if (emailParams) {
+        quary = { userEmail: { $regex: `^${emailParams}$`, } }
+      }
+      const result = await userColletion.find(quary).toArray();
       res.send(result)
     })
 
@@ -55,14 +63,13 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/myplant/:id', async (req, res) => {
-      const id = req.params.id;
-      const quary = { _id: new ObjectId(id) }
+    // app.get('/myplant', async (req, res) => {
+    //   const email = req.query.email;
 
-      const result = await userColletion.find(quary);
+    //   const result = await userColletion.findOne({ email});
 
-      res.send(result)
-    })
+    //   res.send(result)
+    // })
 
 
     app.put('/plant/:id', async (req, res) => {
