@@ -37,6 +37,8 @@ async function run() {
       res.send(result)
     })
 
+    
+
     app.get('/plant',async(req,res)=>{
 
       const result=await userColletion.find().toArray();
@@ -52,6 +54,21 @@ async function run() {
 
       res.send(result)
     })
+
+
+    app.put('/plant/:id', async(req,res)=>{
+      const id=req.params.id;
+      const filter={_id: new ObjectId(id)};
+      const updateCoffee=req.body;
+
+      const updateDoc={
+        $set:updateCoffee
+      }
+      const result = await userColletion.updateOne(filter,updateDoc);
+
+      res.send(result)
+
+    });
 
 
     app.delete('/plant/:id',async(req,res)=>{
