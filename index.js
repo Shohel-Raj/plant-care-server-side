@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId,} = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -37,46 +37,55 @@ async function run() {
       res.send(result)
     })
 
-    
 
-    app.get('/plant',async(req,res)=>{
 
-      const result=await userColletion.find().toArray();
+    app.get('/plant', async (req, res) => {
+
+      const result = await userColletion.find().toArray();
       res.send(result)
     })
 
 
-    app.get('/plant/:id',async(req,res)=>{
-      const id=req.params.id;
-      const quary={_id: new ObjectId(id)}
+    app.get('/plant/:id', async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) }
 
-      const result=await userColletion.findOne(quary);
+      const result = await userColletion.findOne(quary);
+
+      res.send(result)
+    })
+
+    app.get('/myplant/:id', async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) }
+
+      const result = await userColletion.find(quary);
 
       res.send(result)
     })
 
 
-    app.put('/plant/:id', async(req,res)=>{
-      const id=req.params.id;
-      const filter={_id: new ObjectId(id)};
-      const updateCoffee=req.body;
+    app.put('/plant/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateCoffee = req.body;
 
-      const updateDoc={
-        $set:updateCoffee
+      const updateDoc = {
+        $set: updateCoffee
       }
-      const result = await userColletion.updateOne(filter,updateDoc);
+      const result = await userColletion.updateOne(filter, updateDoc);
 
       res.send(result)
 
     });
 
 
-    app.delete('/plant/:id',async(req,res)=>{
-      const id=req.params.id;
-      const quary={_id: new ObjectId(id)};
+    app.delete('/plant/:id', async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) };
 
-      const result= await userColletion.deleteOne(quary)
-      
+      const result = await userColletion.deleteOne(quary)
+
 
       res.send(result)
 
