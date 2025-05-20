@@ -54,6 +54,17 @@ async function run() {
     })
 
 
+    app.delete('/plant/:id',async(req,res)=>{
+      const id=req.params.id;
+      const quary={_id: new ObjectId(id)};
+
+      const result= await userColletion.deleteOne(quary)
+      
+
+      res.send(result)
+
+
+    })
 
 
 
