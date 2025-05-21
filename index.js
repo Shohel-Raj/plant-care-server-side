@@ -46,12 +46,55 @@ async function run() {
       const { emailParams } = req.query;
       let quary = {}
 
+
       if (emailParams) {
         quary = { userEmail: { $regex: `^${emailParams}$`, } }
       }
       const result = await userColletion.find(quary).toArray();
       res.send(result)
     })
+
+
+    app.get('/allPlant', async (req, res) => {
+
+      
+
+      const sortOrder = req.query.order === 'desc' ? -1 : 1;
+
+    const result = await userColletion.aggregate([
+      {
+        $addFields: {
+          careLevelWeight: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$careLevel", "easy"] }, then: 1 },
+                { case: { $eq: ["$careLevel", "moderate"] }, then: 2 },
+                { case: { $eq: ["$careLevel", "difficult"] }, then: 3 }
+              ],
+              default: 4
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          careLevelWeight: sortOrder
+        }
+      },
+      {
+        $project: {
+          careLevelWeight: 0
+        }
+      }
+    ]).toArray();
+
+    res.send(result);
+
+
+    })
+
+
+
 
 
     app.get('/plant/:id', async (req, res) => {
@@ -63,22 +106,16 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/myplant', async (req, res) => {
-    //   const email = req.query.email;
 
-    //   const result = await userColletion.findOne({ email});
-
-    //   res.send(result)
-    // })
 
 
     app.put('/plant/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
-      const updateCoffee = req.body;
+      const UpdatePlant = req.body;
 
       const updateDoc = {
-        $set: updateCoffee
+        $set: UpdatePlant
       }
       const result = await userColletion.updateOne(filter, updateDoc);
 
