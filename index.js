@@ -57,43 +57,50 @@ async function run() {
 
     app.get('/allPlant', async (req, res) => {
 
-      
-
       const sortOrder = req.query.order === 'desc' ? -1 : 1;
 
-    const result = await userColletion.aggregate([
-      {
-        $addFields: {
-          careLevelWeight: {
-            $switch: {
-              branches: [
-                { case: { $eq: ["$careLevel", "easy"] }, then: 1 },
-                { case: { $eq: ["$careLevel", "moderate"] }, then: 2 },
-                { case: { $eq: ["$careLevel", "difficult"] }, then: 3 }
-              ],
-              default: 4
+      const result = await userColletion.aggregate([
+        {
+          $addFields: {
+            careLevelWeight: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ["$careLevel", "easy"] }, then: 1 },
+                  { case: { $eq: ["$careLevel", "moderate"] }, then: 2 },
+                  { case: { $eq: ["$careLevel", "difficult"] }, then: 3 }
+                ],
+                default: 4
+              }
             }
           }
+        },
+        {
+          $sort: {
+            careLevelWeight: sortOrder
+          }
+        },
+        {
+          $project: {
+            careLevelWeight: 0
+          }
         }
-      },
-      {
-        $sort: {
-          careLevelWeight: sortOrder
-        }
-      },
-      {
-        $project: {
-          careLevelWeight: 0
-        }
-      }
-    ]).toArray();
+      ]).toArray();
 
-    res.send(result);
+      res.send(result);
 
 
     })
 
+    app.get('/latestPlant', async (req, res) => {
 
+      const result = await userColletion.aggregate([
+        {
+          $sort: { _id: -1 },
+        }, { $limit: 6 }
+      ]).toArray()
+
+      res.send(result)
+    })
 
 
 
