@@ -32,6 +32,8 @@ async function run() {
     await client.connect();
     const database = client.db('PlantsDB')
     const userColletion = database.collection('Plants')
+    const blogDataCollection = database.collection('blogData')
+    const questionsCollection = database.collection('questions');
 
 
     app.post('/addPlant', async (req, res) => {
@@ -96,7 +98,7 @@ async function run() {
       const result = await userColletion.aggregate([
         {
           $sort: { _id: -1 },
-        }, { $limit: 6 }
+        }, { $limit: 8 }
       ]).toArray()
 
       res.send(result)
@@ -143,6 +145,62 @@ async function run() {
 
     })
 
+
+
+    //-------------------- blog data -------------------
+
+
+    app.get('/blogs', async (req, res) => {
+
+      const result = await blogDataCollection.find().toArray();
+      res.send(result)
+    })
+
+    app.get('/blogsHome', async (req, res) => {
+
+      const result = await blogDataCollection.find().limit(8).toArray();
+      res.send(result)
+    })
+
+    app.get('/blog/:id', async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) }
+
+      const result = await blogDataCollection.findOne(quary);
+
+      res.send(result)
+    })
+
+
+
+    // ---------------- questions --------------
+
+    app.get('/questions', async (req, res) => {
+      const result = await questionsCollection.find().sort({ createdAt: -1 }).toArray();
+      res.send(result);
+    });
+
+
+    app.post('/questions', async (req, res) => {
+      const question = {
+        ...req.body,
+        createdAt: new Date(),
+        answers: [],
+      };
+      const result = await questionsCollection.insertOne(question);
+      res.send(result);
+    });
+
+    app.post('/questions/:id/answer', async (req, res) => {
+      const questionId = req.params.id;
+      const answer = { ...req.body, createdAt: new Date() };
+
+      const result = await questionsCollection.updateOne(
+        { _id: new ObjectId(questionId) },
+        { $push: { answers: answer } }
+      );
+      res.send(result);
+    });
 
 
 
