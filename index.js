@@ -204,6 +204,106 @@ async function run() {
 
 
 
+    app.get('/stats', async (req, res) => {
+      try {
+        const { email } = req.query;
+
+        const filter = email ? { userEmail: email } : {};
+
+        const totalPlants = await userColletion.countDocuments(filter);
+        const totalQuestions = await questionsCollection.countDocuments(filter);
+        const totalBlogs = await blogDataCollection.countDocuments(filter);
+
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        const newPlants = await userColletion.countDocuments({
+          ...filter,
+          createdAt: { $gte: oneWeekAgo },
+        });
+
+        const newQuestions = await questionsCollection.countDocuments({
+          ...filter,
+          createdAt: { $gte: oneWeekAgo },
+        });
+
+        const newBlogs = await blogDataCollection.countDocuments({
+          ...filter,
+          createdAt: { $gte: oneWeekAgo },
+        });
+
+        const calcGrowth = (newCount, totalCount) => {
+          if (totalCount === 0) return "0%";
+          return ((newCount / totalCount) * 100).toFixed(1) + "%";
+        };
+
+        res.json({
+          plants: totalPlants,
+          questions: totalQuestions,
+          blogs: totalBlogs,
+          growth: {
+            plants: calcGrowth(newPlants, totalPlants),
+            questions: calcGrowth(newQuestions, totalQuestions),
+            blogs: calcGrowth(newBlogs, totalBlogs),
+          },
+        });
+      } catch (error) {
+        console.error('Stats error:', error);
+        res.status(500).json({ error: 'Could not fetch user stats' });
+      }
+    });
+
+
+
+    app.get('/category-count', async (req, res) => {
+      try {
+        const result = await userColletion.aggregate([
+          {
+            $group: {
+              _id: '$category',
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              category: '$_id',
+              count: 1
+            }
+          }
+        ]).toArray();
+
+        res.send(result);
+      } catch (err) {
+        console.error('Error fetching category count:', err);
+        res.status(500).json({ error: 'Failed to fetch category count' });
+      }
+    });
+    app.get('/blog-category-count', async (req, res) => {
+      try {
+        const result = await blogDataCollection.aggregate([
+          {
+            $group: {
+              _id: '$category',
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              category: '$_id',
+              count: 1
+            }
+          }
+        ]).toArray();
+
+        res.send(result);
+      } catch (err) {
+        console.error('Error fetching blog category count:', err);
+        res.status(500).json({ error: 'Failed to fetch blog category count' });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");

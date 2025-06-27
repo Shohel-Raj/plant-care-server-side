@@ -1,50 +1,102 @@
 # 🌱 PlantsCare Server
 
-This is the backend server for the **PlantsCare** application, built with **Express.js** and connected to **MongoDB Atlas**. It handles CRUD operations for plant data and supports user-specific queries, sorting, and more.
+This is the backend server for the **PlantsCare** application, built with **Express.js** and connected to **MongoDB Atlas** using the native MongoDB driver. It powers the plant management, blog system, and community Q&A features.
+
+---
 
 ## 🚀 Features
 
-- 🔧 Built with **Express.js**
-- 🌐 CORS-enabled API for frontend access
-- 📦 RESTful CRUD operations for plants
-- 📂 MongoDB database with Mongoose driver
-- 🔐 Secure configuration using `.env`
-- 🧩 Sorting and filtering with MongoDB aggregation
-- ⚡ Lightweight and easy to deploy
-
----
-## 🧪 API Endpoints
-
-| Method | Endpoint           | Description |
-|--------|--------------------|-------------|
-| GET    | `/`                | Health check endpoint |
-| POST   | `/addPlant`        | Add a new plant |
-| GET    | `/plant`           | Get plants by user email (`?emailParams=user@example.com`) |
-| GET    | `/allPlant`        | Get all plants sorted by `careLevel` |
-| GET    | `/latestPlant`     | Get the 6 most recently added plants |
-| GET    | `/plant/:id`       | Get a single plant by its MongoDB `_id` |
-| PUT    | `/plant/:id`       | Update a plant by ID |
-| DELETE | `/plant/:id`       | Delete a plant by ID |
+- ⚙️ Built with **Express.js**
+- 🌍 **CORS-enabled** API for frontend integration
+- 🌱 **CRUD operations** for plant data
+- 📖 Blog system with full post support
+- ❓ Q&A Forum for community engagement
+- 📈 Category-wise and growth statistics
+- 🔐 Environment-based secure configuration
+- 💡 Clean and modular API structure
 
 ---
 
-## 📦 Environment Variables
+## 📦 Technologies Used
 
-Create a `.env` file in the root of your project with the following variables:
+- **Node.js** – JavaScript runtime  
+- **Express** – Web framework  
+- **MongoDB Atlas** – Cloud NoSQL database  
+- **MongoDB Node.js Driver** – For database access  
+- **dotenv** – For managing environment variables  
+- **CORS** – Enables cross-origin requests  
+
+---
+
+## 🌐 API Endpoints
+
+### 🔄 General
+| Method | Endpoint         | Description                |
+|--------|------------------|----------------------------|
+| GET    | `/`              | Server health check        |
+
+---
+
+### 🌿 Plant Management
+| Method | Endpoint               | Description                                             |
+|--------|------------------------|---------------------------------------------------------|
+| POST   | `/addPlant`            | Add a new plant                                         |
+| GET    | `/plant?emailParams=`  | Get plants added by a specific user                    |
+| GET    | `/allPlant?order=asc`  | Get all plants sorted by care level (asc/desc)         |
+| GET    | `/latestPlant`         | Get the 8 most recently added plants                   |
+| GET    | `/plant/:id`           | Get a single plant by MongoDB `_id`                    |
+| PUT    | `/plant/:id`           | Update a plant by ID                                   |
+| DELETE | `/plant/:id`           | Delete a plant by ID                                   |
+| GET    | `/category-count`      | Get number of plants per category                      |
+
+---
+
+### 📖 Blog System
+| Method | Endpoint               | Description                                |
+|--------|------------------------|--------------------------------------------|
+| GET    | `/blogs`               | Get all blog posts                         |
+| GET    | `/blogsHome`           | Get 8 latest blog posts (homepage preview) |
+| GET    | `/blog/:id`            | Get single blog post by ID                 |
+| GET    | `/blog-category-count` | Get number of blogs per category           |
+
+---
+
+### ❓ Community Q&A
+| Method | Endpoint                     | Description                                |
+|--------|------------------------------|--------------------------------------------|
+| GET    | `/questions`                 | Get all community questions (latest first) |
+| POST   | `/questions`                 | Post a new question                        |
+| POST   | `/questions/:id/answer`      | Submit an answer to a question             |
+
+---
+
+### 📊 Statistics
+| Method | Endpoint             | Description                                         |
+|--------|----------------------|-----------------------------------------------------|
+| GET    | `/stats?email=...`   | Get total and growth stats (global or per-user)    |
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in your root directory with the following:
 
 ```env
 PORT=3000
 DB_USER=your_mongodb_username
 DB_PASSWORD=your_mongodb_password
 
-```
 
-## 🧩 Technologies Used
+## ✅ Future Suggestions
 
-- **Node.js** – JavaScript runtime  
-- **Express** – Web framework  
-- **MongoDB** – NoSQL database  
-- **MongoDB Node.js Driver** – For database interactions  
-- **dotenv** – For environment variable management  
-- **CORS** – To handle cross-origin requests  
+- 🔒 Add user authentication with Firebase/Auth0  
+- 🛡 Add rate limiting and input validation  
+- 🧪 Write unit tests using Jest or Supertest  
+- 🚀 Add deployment guide (Render, Railway, Vercel serverless functions)  
 
+---
+
+## 📬 Contact
+
+Created by [Mohammed Shohel RaJ](https://github.com/Shohel-Raj)  
+🔗 Feel free to fork, clone, or contribute!
